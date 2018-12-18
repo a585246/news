@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/news?serverTimezone=GMT
+    username: root
+    password: a5850246
+mybatis:
+  configuration: classpath:mybatis-config.xml
