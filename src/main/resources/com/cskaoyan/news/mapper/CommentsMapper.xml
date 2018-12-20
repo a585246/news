@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cskaoyan.news.mapper.CommentsMapper">
+    <resultMap id="VoMap" type="com.cskaoyan.news.bean.CommentVo">
+    <association column="uid"  property="user"
+    select="com.cskaoyan.news.mapper.UserMapper.getUserById"></association>
+    <association property="comment" javaType="com.cskaoyan.news.bean.Comments">
+        <result  column="id" property="id"/>
+        <result column="uid"  property="uid"/>
+        <result column="nid" property="nid"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="content" property="content"/>
+    </association>
+    </resultMap>
+  <!--  <resultMap id="BaseResultMap" type="com.cskaoyan.news.bean.Comments">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="created_date" jdbcType="TIMESTAMP" property="createdate" />
+        <result column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="nid" jdbcType="INTEGER" property="nid" />
+        <result column="content"/>
+    </resultMap>-->
+    <sql id="Base_Column_List">
+        comments.id, created_date, comments.uid, nid,content
+    </sql>
+    <select id="findByNid"  resultMap="VoMap">
+        select comments.id,created_date,comments.uid,nid,content
+        from comments where nid=#{nid}
+    </select>
+
+    <insert id="insertSelective" parameterType="com.cskaoyan.news.bean.Comments">
+        insert into comments
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="createdDate != null">
+                created_date,
+            </if>
+            <if test="uid != null">
+                uid,
+            </if>
+            <if test="nid != null">
+                nid,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="createdDate != null">
+                #{createdDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="uid != null">
+                #{uid,jdbcType=INTEGER},
+            </if>
+            <if test="nid != null">
+                #{nid,jdbcType=INTEGER},
+            </if>
+            <if test="content != null">
+                #{content,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <!--<select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List" />
+        from comments
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from comments
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.cskaoyan.news.bean.Comments">
+        insert into comments (id, created_date, uid,
+        nid, content)
+        values (#{id,jdbcType=INTEGER}, #{createdate,jdbcType=TIMESTAMP}, #{uid,jdbcType=INTEGER},
+        #{nid,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.cskaoyan.news.bean.Comments">
+        insert into comments
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="createdate != null">
+                created_date,
+            </if>
+            <if test="uid != null">
+                uid,
+            </if>
+            <if test="nid != null">
+                nid,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="createdate != null">
+                #{createdate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="uid != null">
+                #{uid,jdbcType=INTEGER},
+            </if>
+            <if test="nid != null">
+                #{nid,jdbcType=INTEGER},
+            </if>
+            <if test="content != null">
+                #{content,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.cskaoyan.news.bean.Comments">
+        update comments
+        <set>
+            <if test="createdate != null">
+                created_date = #{createdate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="uid != null">
+                uid = #{uid,jdbcType=INTEGER},
+            </if>
+            <if test="nid != null">
+                nid = #{nid,jdbcType=INTEGER},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.cskaoyan.news.bean.Comments">
+        update comments
+        set created_date = #{createdate,jdbcType=TIMESTAMP},
+        uid = #{uid,jdbcType=INTEGER},
+        nid = #{nid,jdbcType=INTEGER},
+        content = #{content,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.cskaoyan.news.bean.Comments">
+        update comments
+        set created_date = #{createdate,jdbcType=TIMESTAMP},
+        uid = #{uid,jdbcType=INTEGER},
+        nid = #{nid,jdbcType=INTEGER}
+        where id = #{id,jdbcType=INTEGER}
+    </update>-->
+
+</mapper>

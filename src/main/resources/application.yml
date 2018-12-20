@@ -4,4 +4,17 @@ spring:
     username: root
     password: a5850246
 mybatis:
-  configuration: classpath:mybatis-config.xml
+  config-location: classpath:mybatis-config.xml
+server:
+  port: 80
+#log级别
+logging :
+    level :
+      root : wran
+#springframework.web日志以DEBUG级别输出
+      org:
+        springframework:
+          web: debug
+#日志保存的本地路径
+    file: F:/upload/wangdaonews.log
+#日志格式
