@@ -15,6 +15,14 @@ logging :
       org:
         springframework:
           web: debug
+      com:
+        cskaoyan:
+          news:
+            mapper: debug
 #日志保存的本地路径
     file: F:/upload/wangdaonews.log
 #日志格式
+headUrl:
+    - "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=4149583382,3783656154&fm=26&gp=0.jpg"
+    - "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3468047555,1781201479&fm=26&gp=0.jpg"
+    - "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2614787432,704623769&fm=26&gp=0.jpg"

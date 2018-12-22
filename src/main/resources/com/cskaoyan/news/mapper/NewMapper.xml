@@ -146,3 +146,24 @@
     limit 10
   </select>
 </mapper>
+
+
+
+
+
+
+<!--
+
+<resultMap id="VoMap" type="com.cskaoyan.news.bean.ConversationVo">
+<association property="conversation"  javaType="com.cskaoyan.news.bean.Conversation">
+  <result column="id" jdbcType="VARCHAR" property="id" />
+  <result column="from_id" jdbcType="INTEGER" property="fromId" />
+  <result column="to_id" jdbcType="INTEGER" property="toId" />
+  <result column="conversionid" jdbcType="VARCHAR" property="conversionid" />
+  <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+</association>
+<association property="user" column="from_id" select="com.cskaoyan.news.mapper.UserMapper.getUserById"
+/>  </resultMap>--><!--
+<select id="selectConversation" resultMap="VoMap">
+select *  from conversation  where to_id=#{id}
+</select>-->

@@ -29,16 +29,18 @@ public class FormController {
         List<NewVo> vos=null;
         if(user==null) {
            vos = newService.findNew(null);
-            }else
-      {
+        }else {
           Integer uid = user.getId();
           vos = newService.findNew(uid);
           model.addAttribute("pop", 0);
       }
+        String contextPath = session.getServletContext().getContextPath();
         model.addAttribute("vos", vos);
-        session.setAttribute("contextPath", "");
+        session.setAttribute("contextPath", contextPath);
         model.addAttribute("cur_date", new Date());
         model.addAttribute("pop", 1);
             return "home";
     }
+
+
 }

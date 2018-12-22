@@ -1,9 +1,9 @@
 package com.cskaoyan.news.controller;
 
-import com.cskaoyan.news.bean.CommentVo;
-import com.cskaoyan.news.bean.Comments;
-import com.cskaoyan.news.bean.New;
-import com.cskaoyan.news.bean.User;
+import com.cskaoyan.news.asynchronous.Event;
+import com.cskaoyan.news.asynchronous.EventProdouce;
+import com.cskaoyan.news.asynchronous.EventType;
+import com.cskaoyan.news.bean.*;
 import com.cskaoyan.news.service.CommentService;
 import com.cskaoyan.news.service.NewService;
 import com.cskaoyan.news.service.UserService;
@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisSentinelPool;
 
@@ -29,6 +26,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import  java.util.*;
 @Controller
+@RequestMapping("")
 public class UserController {
     @Autowired
     UserService userService;
@@ -144,7 +142,7 @@ public class UserController {
         resp.sendRedirect("/news/"+newsId);
     }
 
-
+//点赞
     @ResponseBody
     @RequestMapping("like")
     public Map like(String newsId,HttpSession session)
@@ -152,33 +150,68 @@ public class UserController {
         HashMap ret=new HashMap();
         User user = (User) session.getAttribute("user");
         Integer id = user.getId();
-        Jedis jedis =   JedisUtils.getResource();
-        jedis.srem(newsId + "dislike", id + "");
-        jedis.sadd(newsId + "like", id + "");
-        Long scard = jedis.scard(newsId + "like");
+        Event event = new Event();
+        event.setEventType(EventType.LIKE);
+        event.setFromId(id+"");
+        event.setNewsId(newsId);
+        EventProdouce.fireEvent(event);
+        Long scard =userService.likeEvent(id,newsId);
         ret.put("code",0);
         ret.put("msg",scard);
-        jedis.close();
         return  ret;
     }
 
-
+//点踩
     @ResponseBody
     @RequestMapping("dislike")
     public Map dislike(Integer newsId,HttpSession session)
     {
-
         HashMap ret=new HashMap();
         User user = (User) session.getAttribute("user");
         Integer id = user.getId();
-        Jedis jedis =   JedisUtils.getResource();
-        jedis.srem(newsId + "like", id + "");
-        jedis.sadd(newsId + "dislike", id + "");
-        Long scard = jedis.scard(newsId + "like");
+        Event event = new Event();
+        event.setEventType(EventType.DISLIKE);
+        event.setFromId(id+"");
+        event.setNewsId(newsId+"");
+        EventProdouce.fireEvent(event);
+        Long scard =userService.dislikeEvent(id,newsId);
         ret.put("code",0);
         ret.put("msg",scard);
-        jedis.close();
-        return ret;
+       return ret;
+    }
+
+    @RequestMapping("/user/tosendmsg")
+    public String tosendMsg()
+    {
+        return "sendmsg";
+    }
+
+    @ResponseBody
+    @RequestMapping("/user/msg/addMessage")
+    public Map  addMessage(String toName,String content,HttpSession session)
+    {
+        HashMap ret=new HashMap();
+        User user = (User) session.getAttribute("user");
+        Integer fromId = user.getId();
+        return userService.addMessage(toName,content,fromId);
+    }
+    @RequestMapping("/msg/list")
+    public String  msgList(Model model,String toName,String content,HttpSession session)
+    {
+        HashMap ret=new HashMap();
+        User user = (User) session.getAttribute("user");
+        Integer id = user.getId();
+        List<ConversationVo>  conversations= userService.listMessage(id);
+        model.addAttribute("conversations",conversations);
+        return "letter";
+    }
+    @RequestMapping("/msg/detail")
+    public String  detail(Model model,String conversationId)
+    {
+        HashMap ret=new HashMap();
+        List<MessageVo> messages= userService.detail(conversationId);
+        model.addAttribute("messages",messages);
+        return "letterDetail";
     }
 
 }

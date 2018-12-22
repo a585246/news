@@ -73,7 +73,7 @@
                 data: 'toName='+to+'&&content='+content ,
                 success:function(data){
                     //alert(data)
-                    var dataobj = eval('(' + data + ')');
+                    var dataobj =  data ;
                     //alert(dataobj.code)
                     //alert(dataobj.msg)
 

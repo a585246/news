@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cskaoyan.news.mapper.ConversationMapper">
+  <resultMap id="BaseResultMap" type="com.cskaoyan.news.bean.Conversation">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="from_id" jdbcType="INTEGER" property="fromId" />
+    <result column="to_id" jdbcType="INTEGER" property="toId" />
+    <result column="conversionid" jdbcType="VARCHAR" property="conversionid" />
+    <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+  </resultMap>
+  <resultMap id="VoMap" type="com.cskaoyan.news.bean.ConversationVo">
+    <association property="conversation"  javaType="com.cskaoyan.news.bean.Conversation">
+      <result column="id" jdbcType="VARCHAR" property="id" />
+      <result column="from_id" jdbcType="INTEGER" property="fromId" />
+      <result column="to_id" jdbcType="INTEGER" property="toId" />
+      <result column="conversionid" jdbcType="VARCHAR" property="conversionid" />
+      <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+      <result column="content" property="content"/>
+    </association>
+    <association property="user" column="from_id" select="com.cskaoyan.news.mapper.UserMapper.getUserById"
+    />  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.cskaoyan.news.bean.Conversation">
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, from_id, to_id, conversionid, created_date
+  </sql>
+  <sql id="Blob_Column_List">
+    content
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from conversation
+    where conversionid = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from conversation
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.cskaoyan.news.bean.Conversation">
+    insert into conversation (id, from_id, to_id, 
+      conversionid, created_date, content
+      )
+    values (#{id,jdbcType=VARCHAR}, #{fromId,jdbcType=INTEGER}, #{toId,jdbcType=INTEGER}, 
+      #{conversionid,jdbcType=VARCHAR}, #{createdDate,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cskaoyan.news.bean.Conversation">
+    insert into conversation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="fromId != null">
+        from_id,
+      </if>
+      <if test="toId != null">
+        to_id,
+      </if>
+      <if test="conversionid != null">
+        conversionid,
+      </if>
+      <if test="createdDate != null">
+        created_date,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="fromId != null">
+        #{fromId,jdbcType=INTEGER},
+      </if>
+      <if test="toId != null">
+        #{toId,jdbcType=INTEGER},
+      </if>
+      <if test="conversionid != null">
+        #{conversionid,jdbcType=VARCHAR},
+      </if>
+      <if test="createdDate != null">
+        #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cskaoyan.news.bean.Conversation">
+    update conversation
+    <set>
+      <if test="fromId != null">
+        from_id = #{fromId,jdbcType=INTEGER},
+      </if>
+      <if test="toId != null">
+        to_id = #{toId,jdbcType=INTEGER},
+      </if>
+      <if test="conversionid != null">
+        conversionid = #{conversionid,jdbcType=VARCHAR},
+      </if>
+      <if test="createdDate != null">
+        created_date = #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.cskaoyan.news.bean.Conversation">
+    update conversation
+    set from_id = #{fromId,jdbcType=INTEGER},
+      to_id = #{toId,jdbcType=INTEGER},
+      conversionid = #{conversionid,jdbcType=VARCHAR},
+      created_date = #{createdDate,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cskaoyan.news.bean.Conversation">
+    update conversation
+    set
+    id=#{id},
+    from_id = #{fromId,jdbcType=INTEGER},
+      to_id = #{toId,jdbcType=INTEGER},
+      created_date = #{createdDate,jdbcType=TIMESTAMP}
+    where conversionid = #{conversionid,jdbcType=VARCHAR}
+  </update>
+<select id="selectConversation" resultMap="VoMap">
+select  <include refid="Base_Column_List" />
+  ,
+  <include refid="Blob_Column_List" />
+  from conversation  where to_id=#{id}
+</select>
+</mapper>
