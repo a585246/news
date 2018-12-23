@@ -2,6 +2,7 @@ package com.cskaoyan.news.service.imp;
 
 import com.cskaoyan.news.bean.*;
 import com.cskaoyan.news.mapper.ConversationMapper;
+import com.cskaoyan.news.mapper.JedisDao;
 import com.cskaoyan.news.mapper.MessageMapper;
 import com.cskaoyan.news.mapper.UserMapper;
 import com.cskaoyan.news.service.UserService;
@@ -21,6 +22,8 @@ import java.util.UUID;
 public class UserServiceImp  implements UserService {
     @Autowired
    private UserMapper userMapper;
+    @Autowired
+    JedisDao jedisDao;
     @Autowired
     ConversationMapper conversationMapper;
 
@@ -48,23 +51,16 @@ public class UserServiceImp  implements UserService {
 
     @Override
     public Long likeEvent(Integer id, String newsId) {
-        Jedis jedis =   JedisUtils.getResource();
-        jedis.srem(newsId + "dislike", id + "");
-        jedis.sadd(newsId + "like", id + "");
-        Long scard = jedis.scard(newsId + "like");
-        jedis.close();
-        return scard;
+        return jedisDao.getLikeScard(id, newsId);
     }
+
+
+
 
     @Override
     public Long dislikeEvent(Integer id, Integer newsId) {
 
-        Jedis jedis =   JedisUtils.getResource();
-        jedis.srem(newsId + "like", id + "");
-        jedis.sadd(newsId + "dislike", id + "");
-        Long scard = jedis.scard(newsId + "like");
-        jedis.close();
-        return scard;
+       return jedisDao.getDislikeScard(id,newsId+"");
     }
 
     @Override

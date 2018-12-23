@@ -1,12 +1,18 @@
 package com.cskaoyan.news.controller.filter;
 
 import com.cskaoyan.news.shiro.AdminRealm;
+import com.cskaoyan.news.shiro.shiroCached.MyCachedManager;
 import com.sun.javafx.collections.MappingChange;
+import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.session.mgt.DefaultSessionManager;
+import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.*;
+import org.apache.shiro.web.servlet.Cookie;
 import org.apache.shiro.web.servlet.SimpleCookie;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -80,11 +86,11 @@ public class ShiroConfiguration {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         // 设置realm.
         securityManager.setRealm(myShiroRealm());
-        // 自定义缓存实现 使用redis
-        //securityManager.setCacheManager(cacheManager());
+        //自定义缓存实现 使用redis
+        securityManager.setCacheManager(cacheManager());
         // 自定义session管理 使用redis
-        //securityManager.setSessionManager(sessionManager());
-        //注入记住我管理器;
+        securityManager.setSessionManager(sessionManager());
+       // 注入记住我管理器;
     /*    securityManager.setRememberMeManager(rememberMeManager());*/
         return securityManager;
 }
@@ -92,22 +98,18 @@ public class ShiroConfiguration {
     public AdminRealm myShiroRealm(){
         return  adminRealm;
     }
-
-    /**
-     * cookie对象;
-     * @return
-     */
-    public SimpleCookie rememberMeCookie(){
-        //这个参数是cookie的名称，对应前端的checkbox的name = rememberMe
-        SimpleCookie simpleCookie = new SimpleCookie("rememberMe");
-        //<!-- 记住我cookie生效时间30天 ,单位秒;-->
-        simpleCookie.setMaxAge(2592000);
-        return simpleCookie;
+    public SessionManager sessionManager(){
+        DefaultWebSessionManager defaultSessionManager = new DefaultWebSessionManager();
+    defaultSessionManager.setGlobalSessionTimeout(10*24*3600);
+    defaultSessionManager.setSessionIdCookie(cookie());
+    return defaultSessionManager;
     }
-
-    /**
-     * cookie管理对象;记住我功能
-     * @return
-     */
-
+    public CacheManager cacheManager(){
+      return   new MyCachedManager();
+    }
+    public Cookie cookie(){
+        SimpleCookie simpleCookie = new SimpleCookie("shiro.session");
+    simpleCookie.setPath("/");
+    return simpleCookie;
+    }
 }
